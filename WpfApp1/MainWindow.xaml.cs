@@ -189,7 +189,8 @@ namespace WpfApp1
                     cmd.Transaction = tran;
                     cmd.CommandText = $"SELECT * FROM " + tableName + " limit 0";
 
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd)) 
+
                     {
                         adapter.UpdateBatchSize = 10000;
                         using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
