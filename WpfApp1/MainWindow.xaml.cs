@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -24,26 +25,31 @@ namespace WpfApp1
         private MySqlDataAdapter dataAdapter;
         private DataBase dataBase;
         private string CurrentTable;
-        private DataTable Table;
-        bool rowEdited = false;
+        private DataTable newTable = new DataTable();
+
+        private ObservableCollection<Column> LstColumns { get ; set ; }
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
             dataBase = new DataBase();
             dataAdapter = new MySqlDataAdapter();
-            Table = new DataTable();
             tabControl.Visibility = Visibility.Collapsed;
             DataBaseView.Visibility = Visibility.Collapsed;
+            AddTable.Visibility = Visibility.Hidden;
+            btn_Appy.IsEnabled = false;
+            LstColumns = new ObservableCollection<Column>();
+            NewTableData.ItemsSource = LstColumns;
+
         }
 
         private void btn_LogIn_Click(object sender, RoutedEventArgs e)
         {
             login();
 
-            
         }
-        
+
         private void txt_LogIn_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter) txt_password.Focus();
@@ -67,13 +73,13 @@ namespace WpfApp1
             {
                 dataBase.LocalConnect(Login, Password);
             }
-            catch (MySqlException ooop)
+            catch (MySqlException error)
             {
-                System.Windows.MessageBox.Show(ooop.Message);
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
                 return;
             }
 
-            
+
 
             LogInGrid.Visibility = Visibility.Collapsed;
             tabControl.Visibility = Visibility.Visible;
@@ -82,16 +88,17 @@ namespace WpfApp1
             ParseDataBaseData();
         }
 
-        
+
 
         private void TableView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        { 
+        {
             DataTable tableData = new DataTable();
 
             TextBlock tableName = (TextBlock)(sender);
 
             CurrentTable = tableName.Text;
 
+            TableItem.Header = CurrentTable;
             parseTable(CurrentTable, tableData);
 
             TableData.DataContext = tableData.DefaultView;
@@ -100,8 +107,17 @@ namespace WpfApp1
 
         private void parseTable(string tableName, DataTable table_to_Fill)
         {
-            MySqlCommand tableDataParse = new MySqlCommand("SELECT * FROM `" + tableName + "`;", dataBase.getConnection());
-            dataAdapter.SelectCommand = tableDataParse;
+            try
+            {
+                MySqlCommand tableDataParse = new MySqlCommand("SELECT * FROM `" + tableName + "`;", dataBase.getConnection());
+                dataAdapter.SelectCommand = tableDataParse;
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
+            }
+
             dataAdapter.Fill(table_to_Fill);
         }
 
@@ -111,29 +127,45 @@ namespace WpfApp1
             parseDataBaseViews();
             parseDataBaseTriggers();
         }
-            
+
         private void parseDataBaseTables()
         {
             DataTable tables = new DataTable();
+            try
+            {
 
-            MySqlCommand tablesParse = new MySqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'", dataBase.getConnection());
-            dataAdapter.SelectCommand = tablesParse;
 
-            dataAdapter.Fill(tables);
-            
-            TableList.ItemsSource=new DataView(tables);
-           
+                MySqlCommand tablesParse = new MySqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'", dataBase.getConnection());
+                dataAdapter.SelectCommand = tablesParse;
+
+                dataAdapter.Fill(tables);
+            }
+            catch (MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
+            }
+
+            TableList.ItemsSource = new DataView(tables);
+
 
         }
 
         private void parseDataBaseViews()
         {
             DataTable views = new DataTable();
+            try
+            {
+                MySqlCommand tablesParse = new MySqlCommand("SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_TYPE LIKE 'VIEW'; ", dataBase.getConnection());
+                dataAdapter.SelectCommand = tablesParse;
 
-            MySqlCommand tablesParse = new MySqlCommand("SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_TYPE LIKE 'VIEW'; ", dataBase.getConnection());
-            dataAdapter.SelectCommand = tablesParse;
-
-            dataAdapter.Fill(views);
+                dataAdapter.Fill(views);
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
+            }
 
             ViewsList.ItemsSource = new DataView(views);
         }
@@ -141,10 +173,16 @@ namespace WpfApp1
         private void parseDataBaseTriggers()
         {
             DataTable views = new DataTable();
-
-            MySqlCommand tablesParse = new MySqlCommand("SELECT trigger_name FROM information_schema.triggers;", dataBase.getConnection());
-            dataAdapter.SelectCommand = tablesParse;
-           
+            try
+            {
+                MySqlCommand tablesParse = new MySqlCommand("SELECT trigger_name FROM information_schema.triggers;", dataBase.getConnection());
+                dataAdapter.SelectCommand = tablesParse;
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
+            }
             dataAdapter.Fill(views);
 
             TriggersList.ItemsSource = new DataView(views);
@@ -157,95 +195,176 @@ namespace WpfApp1
 
         private void btn_Appy_Click(object sender, RoutedEventArgs e)
         {
+            DataTable dataTable = ((DataView)(TableData.ItemsSource)).ToTable();
 
-           
-          
+            DataTable originalTable = new DataTable();
+            parseTable(CurrentTable, originalTable);
 
-          
+            if (originalTable.Rows.Count < dataTable.Rows.Count)
+            {
+                DataTable ds = new DataTable();
+                ds = GetDataTableLayout(CurrentTable);
+                for (int i = originalTable.Rows.Count; i < dataTable.Rows.Count; i++)
+                {
+                    DataRow row = ds.NewRow();
+                    row.ItemArray = dataTable.Rows[i].ItemArray;
+                    ds.Rows.Add(row);
+                }
+
+                try
+                {
+                    BulkInsertMySQL(ds, CurrentTable);
+                }
+                catch (MySqlException error)
+                {
+                    MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                    return;
+                }
+            }
         }
 
 
         public DataTable GetDataTableLayout(string tableName)
         {
-            DataTable table = new DataTable();               
-            string query = $"SELECT * FROM " + tableName + " limit 0";
-            using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, dataBase.getConnection()))
+            DataTable table = new DataTable();
+            try
             {
-                adapter.Fill(table);
-            };
-            
+                string query = $"SELECT * FROM " + tableName + " limit 0";
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, dataBase.getConnection()))
+                {
+                    adapter.Fill(table);
+                };
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return null;
+            }
 
             return table;
         }
 
-        public void BulkInsertMySQL(DataTable table, string tableName) 
+        public void BulkInsertMySQL(DataTable table, string tableName)
         {
-
-            using (MySqlTransaction tran = dataBase.getConnection().BeginTransaction(IsolationLevel.Serializable))
+            try
             {
-                using (MySqlCommand cmd = new MySqlCommand())
+                using (MySqlTransaction tran = dataBase.getConnection().BeginTransaction(IsolationLevel.Serializable))
                 {
-                    cmd.Connection = dataBase.getConnection();
-                    cmd.Transaction = tran;
-                    cmd.CommandText = $"SELECT * FROM " + tableName + " limit 0";
-
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd)) 
-
+                    using (MySqlCommand cmd = new MySqlCommand())
                     {
-                        adapter.UpdateBatchSize = 10000;
-                        using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
+                        cmd.Connection = dataBase.getConnection();
+                        cmd.Transaction = tran;
+                        cmd.CommandText = $"SELECT * FROM " + tableName + " limit 0";
+
+                        using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+
                         {
-                            cb.SetAllValues = true;
-                            adapter.Update(table);
-                            tran.Commit();
-                        }
-                    };
+                            adapter.UpdateBatchSize = 10000;
+                            using (MySqlCommandBuilder cb = new MySqlCommandBuilder(adapter))
+                            {
+                                cb.SetAllValues = true;
+                                adapter.Update(table);
+                                tran.Commit();
+                            }
+                        };
+                    }
                 }
+            }
+            catch (MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
             }
 
         }
 
         private void TableData_RowEditEnding(object sender, SelectionChangedEventArgs e)
         {
+            btn_Appy.IsEnabled = true;
         }
 
-        private void TableData_LayoutUpdated(object sender, EventArgs e)
+        private void AddTable_Click(object sender, RoutedEventArgs e)
         {
-            
+            AddTable.Visibility = Visibility.Visible;
+            tabControl.SelectedItem = AddTable;
         }
 
-        private void TableData_KeyUp(object sender, KeyEventArgs e)
+        private void NewTableData_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            if(e.Key==Key.Enter)
+            LstColumns.Add(new Column());
+            NewTableData.ItemsSource = LstColumns;
+        }
+
+        private void DeleteTable_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mnu = sender as MenuItem;
+            StackPanel sp = null;
+            if (mnu != null)
             {
-                DataTable ds = new DataTable();
-                ds = GetDataTableLayout(CurrentTable);
-
-
-                DataTable originTable = new DataTable();
-                parseTable(CurrentTable, originTable);
-
-                DataTable dataTable = ((DataView)(TableData.ItemsSource)).ToTable();
-
-                DataRow row = ds.NewRow();
-                for (int i = 0; i < row.Table.Columns.Count; i++)
-                {
-                    row[i] = dataTable.Rows[dataTable.Rows.Count - 1][i];
-                }
-                ds.Rows.Add(row);
-
-
-                try
-                {
-                    BulkInsertMySQL(ds, CurrentTable);
-                }
-                catch (MySqlException oops)
-                {
-                    MessageBox.Show(oops.Message);
-                }
-
-                rowEdited = false;
+                sp = ((ContextMenu)mnu.Parent).PlacementTarget as StackPanel;
             }
+
+            string cmdLine = "DROP TABLE " + ((TextBlock)(sp.Children[2])).Text + ";";
+
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(cmdLine, dataBase.getConnection());
+                cmd.ExecuteNonQuery();
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+            }
+
+            ParseDataBaseData();
+        }
+
+        private void btn_addTable_Click(object sender, RoutedEventArgs e)
+        {
+            string cmdString = "CREATE TABLE `" + newTableName.Text + "`(";
+
+            foreach (Column column in LstColumns)
+            {
+                string PK = ",PRIMARY KEY(`" + column.Column_Name + "`)"; ;
+                string UQ = ",UNIQUE INDEX `" + column.Column_Name + "_UNIQUE` (`" + column.Column_Name + "` ASC) VISIBLE ";
+
+                cmdString += column.Column_Name;
+
+                cmdString +=" "+ column.type + " NOT NULL";
+
+                if (column.Unique == true)
+                {
+                    cmdString += UQ;
+                }
+
+                if (column.Primary_Key == true)
+                {
+                    cmdString += PK;
+                }
+                if(LstColumns.IndexOf(column)!=LstColumns.Count-1) { cmdString += ","; }
+
+            }
+
+            cmdString += ");";
+
+            MessageBox.Show(cmdString);
+
+            try
+            {
+
+                MySqlCommand createTableCommand = new MySqlCommand(cmdString, dataBase.getConnection());
+                createTableCommand.ExecuteNonQuery();
+                ParseDataBaseData();
+            }
+            catch(MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+            }
+        }
+
+        private void TableData_RowEditEnding_1(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            btn_Appy.IsEnabled = true;
         }
     }
 }

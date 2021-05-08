@@ -3,23 +3,47 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:NameSpace="clr-namespace:WpfApp1"
         xmlns:local="clr-namespace:WpfApp1"
+        xmlns:Data="clr-namespace:System.Data;assembly=System.Data" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="787" WindowStartupLocation="Manual" AllowDrop="True" ResizeMode="NoResize" ShowInTaskbar="False">
+        Title="SQLClient" Height="400" Width="787" WindowStartupLocation="CenterOwner" AllowDrop="True" ResizeMode="NoResize" ShowInTaskbar="False">
+
     <Window.Resources>
+
+        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="NameSpace:Type"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+
         <DataTemplate x:Key="TablesTemplate">
-            <StackPanel>
-                <TextBlock Text="{Binding Path=TABLE_NAME}" MouseLeftButtonUp="TableView_MouseDoubleClick"/>
+
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="DeleteTable" Header="Delete" Click="DeleteTable_Click"/>
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+
+                <Image Source="Resourses/TableIcon.bmp" Width="10" Height="10" />
+                <Separator Width="5" Visibility="Hidden"/>
+
+                <TextBlock Text="{Binding TABLE_NAME}" MouseLeftButtonUp="TableView_MouseDoubleClick"  />
+
             </StackPanel>
         </DataTemplate>
+
         <DataTemplate x:Key="TriggerTemplate">
             <StackPanel>
-                <TextBlock Text="{Binding Path=TRIGGER_NAME}" MouseLeftButtonUp="TriggerList_MouseDoubleClick"/>
+                <TextBlock Text="{Binding TRIGGER_NAME}" MouseLeftButtonUp="TriggerList_MouseDoubleClick"/>
             </StackPanel>
         </DataTemplate>
-        
+
     </Window.Resources>
-    
+
     <Grid Height="369" VerticalAlignment="Top" HorizontalAlignment="Right" Width="767" Margin="0,0,4,0">
         <Grid x:Name="LogInGrid" Margin="236,80,235,141">
 
@@ -42,28 +66,79 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
-        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="300" VerticalAlignment="Top" Width="562" BorderBrush="Black" Margin="205,7,0,0" BorderThickness="1">
-            <TabItem Header="Содержимое таблицы">
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="349" VerticalAlignment="Top" Width="562" BorderBrush="Black" Margin="200,10,0,0" BorderThickness="1">
+            <TabItem x:Name ="TableItem" Header="Содержимое таблицы">
                 <Grid Background="White" Margin="0,0,-1,-1">
-                    <DataGrid x:Name="TableData" HorizontalAlignment="Right" Height="273" VerticalAlignment="Top" Width="557" ItemsSource="{Binding}" Background="White" BorderBrush="Black" BorderThickness="0" Margin="1,0,0,0" SelectionChanged="TableData_RowEditEnding" LayoutUpdated="TableData_LayoutUpdated" KeyUp="TableData_KeyUp"/>
+
+                    <DataGrid x:Name="TableData" HorizontalAlignment="Right" Height="273" VerticalAlignment="Top" Width="557" ItemsSource="{Binding}" Background="White" BorderBrush="Black" BorderThickness="0" Grid.ColumnSpan="2" RowEditEnding="TableData_RowEditEnding_1"/>
+                    <Button x:Name="btn_Appy" Content="Apply" HorizontalAlignment="Left" Margin="333,292,0,0" VerticalAlignment="Top" Width="75" Click="btn_Appy_Click"/>
+                    <Button x:Name="button_Copy" Content="Button" HorizontalAlignment="Left" Margin="472,292,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.6,0.55"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid Background="White" Margin="0,0,4,20">
+            <TabItem x:Name="AddTable" Header="AddTable" >
+                <Grid Background="White" Margin="0,0,4,3">
+                    <TextBox x:Name="newTableName" HorizontalAlignment="Left" Height="23" Margin="69,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="177"/>
+                    <TextBlock IsHitTestVisible="False" Text="Имя таблицы" HorizontalAlignment="Right" Margin="0,0,378,280" Foreground="DarkGray" IsEnabled="False" RenderTransformOrigin="-7.034,-12.312" Height="19" VerticalAlignment="Bottom" Width="102">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=newTableName}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
+                    <Image x:Name="image" HorizontalAlignment="Left" Height="38" Margin="10,10,0,0" VerticalAlignment="Top" Width="37" Source="Resourses/TableIcon.bmp"/>
+                    <DataGrid x:Name="NewTableData" ItemsSource="{Binding Path=LstColumns}" AutoGenerateColumns="False" CanUserAddRows="True" Margin="0,53,0,35">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path = Column_Name}" Width="*" />
+                            <DataGridCheckBoxColumn Header="PK" Binding="{Binding Path = Primary_Key}" Width="*" />
+                            <DataGridCheckBoxColumn Header="UQ" Binding="{Binding Path = Unique}" Width="*" />
+                            <DataGridTemplateColumn Header="Type" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" SelectedItem="{Binding Path=type}">
+
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button x:Name="btn_addTable" Content="Добавить таблицу" HorizontalAlignment="Left" Margin="467,288,0,0" VerticalAlignment="Top" Width="75" Click="btn_addTable_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>
         <TreeView x:Name="DataBaseView" HorizontalAlignment="Left" Height="300" Margin="10,7,0,0" VerticalAlignment="Top" Width="190" BorderBrush="{x:Null}">
             <TreeViewItem Header="DataBase" IsExpanded="True">
-                <TreeViewItem Name = "TableList" Header="Tables" IsExpanded="True" ItemTemplate="{StaticResource TablesTemplate}"/>
-                <TreeViewItem Name = "TriggersList" Header="Triggers" ItemTemplate="{StaticResource TriggerTemplate}"/>
-                <TreeViewItem Name = "ViewsList" Header="Views" ItemTemplate="{StaticResource TablesTemplate}"/>
-                <TreeViewItem Name = "FormsList" Header="Forms"/>
+                <TreeViewItem x:Name = "TableList" Header="Tables" IsExpanded="True" ItemTemplate="{StaticResource TablesTemplate}">
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu >
+                            <MenuItem Header="Add table" Click="AddTable_Click"/>
+                        </ContextMenu>
+                    </TreeViewItem.ContextMenu>
+                </TreeViewItem>
+                <TreeViewItem x:Name = "TriggersList" Header="Triggers" ItemTemplate="{StaticResource TriggerTemplate}">
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu/>
+                    </TreeViewItem.ContextMenu>
+                </TreeViewItem>
+                <TreeViewItem x:Name = "ViewsList" Header="Views" ItemTemplate="{StaticResource TablesTemplate}">
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu/>
+                    </TreeViewItem.ContextMenu>
+                </TreeViewItem>
+                <TreeViewItem x:Name = "FormsList" Header="Forms">
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu/>
+                    </TreeViewItem.ContextMenu>
+                </TreeViewItem>
             </TreeViewItem>
         </TreeView>
-        <Button x:Name="btn_Appy" Content="Apply" HorizontalAlignment="Left" Margin="567,339,0,0" VerticalAlignment="Top" Width="75" Click="btn_Appy_Click"/>
-        <Button x:Name="button_Copy" Content="Button" HorizontalAlignment="Left" Margin="682,339,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.6,0.55"/>
         <x:Code>
             <![CDATA[
             private void pbPassword_PasswordChanged(object sender, RoutedEventArgs e) 

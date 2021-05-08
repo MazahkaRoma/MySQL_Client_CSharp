@@ -30,7 +30,7 @@ namespace WpfApp1
 
         public bool isConnected()
         {
-            return connection.State == System.Data.ConnectionState.Open;
+          return connection.State == System.Data.ConnectionState.Open;
         }
 
         private void openConnection()
