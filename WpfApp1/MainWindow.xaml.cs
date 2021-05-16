@@ -68,10 +68,32 @@ namespace WpfApp1
         {
             string Login = txt_LogIn.Text;
             string Password = txt_password.Password;
+            DataTable loginDT = new DataTable();
 
             try
             {
-                dataBase.LocalConnect(Login, Password);
+                dataBase.LocalConnect("Admin", "123456789");
+                MySqlCommand tableDataParse = new MySqlCommand("SELECT ID_Teacher,FIO,Pasport FROM computercourses.teacher WHERE FIO="+ '"' + Login + '"' + " AND Pasport="+ '"' + Password+ '"'+";", dataBase.getConnection());
+                dataAdapter.SelectCommand = tableDataParse;
+
+                if (dataAdapter.Fill(loginDT) != 0)
+                {
+                    Teacherform tc = new Teacherform((int)loginDT.Rows[0].ItemArray[0],Login, dataBase);
+                    this.Hide();
+                    tc.Show();
+                    this.Close();
+                }
+                else
+                {
+                    tableDataParse = new MySqlCommand("SELECT FIO,Phone FROM computercourses.client WHERE FIO=" + '"' + Login + '"' + " AND Phone=" + '"' + Password + '"' + ";", dataBase.getConnection());
+                    dataAdapter.SelectCommand = tableDataParse;
+                    if (dataAdapter.Fill(loginDT) != 0)
+                    {
+                        new StudentForm(Login, dataBase).Show();
+                    }
+                }
+
+
             }
             catch (MySqlException error)
             {
@@ -133,11 +155,8 @@ namespace WpfApp1
             DataTable tables = new DataTable();
             try
             {
-
-
                 MySqlCommand tablesParse = new MySqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'", dataBase.getConnection());
                 dataAdapter.SelectCommand = tablesParse;
-
                 dataAdapter.Fill(tables);
             }
             catch (MySqlException error)
