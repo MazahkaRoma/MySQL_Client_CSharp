@@ -60,26 +60,27 @@ namespace WpfApp1
 
             try
             {
-                dataBase.LocalConnect("Admin", "123456789");
+                dataBase.LocalConnect("admin", "admin");
                 MySqlCommand tableDataParse = new MySqlCommand("SELECT ID_Teacher,FIO,Pasport FROM computercourses.teacher WHERE FIO="+ '"' + Login + '"' + " AND Pasport="+ '"' + Password+ '"'+";", dataBase.getConnection());
                 dataAdapter.SelectCommand = tableDataParse;
 
                 if (dataAdapter.Fill(loginDT) != 0)
                 {
-                    Teacherform tc = new Teacherform((int)loginDT.Rows[0].ItemArray[0],Login, dataBase);
+                    Teacherform tc = new Teacherform((int)loginDT.Rows[0].ItemArray[0], Login, dataBase);
                     this.Hide();
                     tc.Show();
                     this.Close();
                 }
                 else
                 {
-                    tableDataParse = new MySqlCommand("SELECT FIO,Phone FROM computercourses.client WHERE FIO=" + '"' + Login + '"' + " AND Phone=" + '"' + Password + '"' + ";", dataBase.getConnection());
+                    tableDataParse = new MySqlCommand("SELECT * FROM computercourses.client WHERE FIO=" + '"' + Login + '"' + " AND Phone=" + '"' + Password + '"' + ";", dataBase.getConnection());
                     dataAdapter.SelectCommand = tableDataParse;
-                    if (dataAdapter.Fill(loginDT) != 0)
+                    DataTable dt = new DataTable();
+                    if (dataAdapter.Fill(dt) != 0)
                     {
-                        new StudentForm(Login, dataBase).Show();
-                    }
-                }
+                        new StudentForm((int)dt.Rows[0].ItemArray[0], Login, dataBase).Show();
+
+                    } }
 
 
             }
@@ -174,7 +175,7 @@ namespace WpfApp1
                 return;
             }
 
-            ViewsList.ItemsSource = new DataView(views);
+            //ViewsList.ItemsSource = new DataView(views);
         }
 
         private void parseDataBaseTriggers()
@@ -192,7 +193,7 @@ namespace WpfApp1
             }
             dataAdapter.Fill(views);
 
-            TriggersList.ItemsSource = new DataView(views);
+            //TriggersList.ItemsSource = new DataView(views);
         }
 
         private void TriggerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)

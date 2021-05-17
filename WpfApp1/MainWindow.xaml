@@ -122,21 +122,9 @@
                         </ContextMenu>
                     </TreeViewItem.ContextMenu>
                 </TreeViewItem>
-                <TreeViewItem x:Name = "TriggersList" Header="Triggers" ItemTemplate="{StaticResource TriggerTemplate}">
-                    <TreeViewItem.ContextMenu>
-                        <ContextMenu/>
-                    </TreeViewItem.ContextMenu>
-                </TreeViewItem>
-                <TreeViewItem x:Name = "ViewsList" Header="Views" ItemTemplate="{StaticResource TablesTemplate}">
-                    <TreeViewItem.ContextMenu>
-                        <ContextMenu/>
-                    </TreeViewItem.ContextMenu>
-                </TreeViewItem>
-                <TreeViewItem x:Name = "FormsList" Header="Forms">
-                    <TreeViewItem.ContextMenu>
-                        <ContextMenu/>
-                    </TreeViewItem.ContextMenu>
-                </TreeViewItem>
+               
+               
+                
             </TreeViewItem>
         </TreeView>
         <x:Code>

@@ -6,7 +6,45 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="StudentForm" Height="450" Width="800">
+    <Window.Resources>
+        <DataTemplate x:Key="Courses">
+
+            <StackPanel Orientation="Horizontal"  >
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="DeleteTable" Header="Delete" />
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
+
+                <Image Source="Resourses/TableIcon.bmp" Width="10" Height="10" />
+                <Separator Width="5" Visibility="Hidden"/>
+
+                <TextBlock Text="{Binding Name}" MouseLeftButtonUp="TextBlock_MouseLeftButtonUp"/>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
-        
+        <TreeView x:Name="DataBaseView" HorizontalAlignment="Left" Height="300" Margin="10,7,0,0" VerticalAlignment="Top" Width="190" BorderBrush="{x:Null}">
+            <TreeViewItem x:Name="CoursesView"  Header="Мои курсы" IsExpanded="True" ItemTemplate="{StaticResource Courses}">
+
+            </TreeViewItem>
+        </TreeView>
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="399" Margin="200,10,0,0" VerticalAlignment="Top" Width="582">
+            <TabItem Header="Мои курсы">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox x:Name="tb_courseName" HorizontalAlignment="Left" Height="23" Margin="18,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
+                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="18,23,0,0" TextWrapping="Wrap" Text="Имя:" VerticalAlignment="Top" RenderTransformOrigin="-0.082,0.503"/>
+                    <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="18,77,0,0" TextWrapping="Wrap" Text="Категория:" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_category" HorizontalAlignment="Left" Height="23" Margin="18,98,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
+                    <TextBox x:Name="tb_daysOfReturn" HorizontalAlignment="Left" Height="23" Margin="18,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
+                    <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="18,137,0,0" TextWrapping="Wrap" Text="Время на возврат (дни):" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_price" HorizontalAlignment="Left" Height="23" Margin="18,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" KeyUp="tb_price_KeyUp"/>
+                    <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="18,195,0,0" TextWrapping="Wrap" Text="Цена:" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Купить курс">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
