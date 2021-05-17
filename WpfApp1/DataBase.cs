@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WpfApp1
 {
-    class DataBase
+    public class DataBase
     {
         private MySqlConnection connection;
 
