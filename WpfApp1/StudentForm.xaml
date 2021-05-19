@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="StudentForm" Height="450" Width="800">
+        Title="Форма клиента" Height="450" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="Courses">
 
@@ -30,20 +30,39 @@
             </TreeViewItem>
         </TreeView>
         <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="399" Margin="200,10,0,0" VerticalAlignment="Top" Width="582">
-            <TabItem Header="Мои курсы">
-                <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="tb_courseName" HorizontalAlignment="Left" Height="23" Margin="18,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
+            <TabItem Header="Информация о курсе">
+                <Grid Background="White">
+
+
+                    <TextBox x:Name="tb_courseName" HorizontalAlignment="Left" Height="23" Margin="18,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Grid.ColumnSpan="2" Background="#FFE5E5E5"/>
                     <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="18,23,0,0" TextWrapping="Wrap" Text="Имя:" VerticalAlignment="Top" RenderTransformOrigin="-0.082,0.503"/>
                     <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="18,77,0,0" TextWrapping="Wrap" Text="Категория:" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tb_category" HorizontalAlignment="Left" Height="23" Margin="18,98,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
-                    <TextBox x:Name="tb_daysOfReturn" HorizontalAlignment="Left" Height="23" Margin="18,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182"/>
+                    <TextBox x:Name="tb_category" HorizontalAlignment="Left" Height="23" Margin="18,98,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Grid.ColumnSpan="2" Background="#FFE5E5E5"/>
+                    <TextBox x:Name="tb_daysOfReturn" HorizontalAlignment="Left" Height="23" Margin="18,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Grid.ColumnSpan="2" Background="#FFE5E5E5"/>
                     <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="18,137,0,0" TextWrapping="Wrap" Text="Время на возврат (дни):" VerticalAlignment="Top"/>
-                    <TextBox x:Name="tb_price" HorizontalAlignment="Left" Height="23" Margin="18,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" KeyUp="tb_price_KeyUp"/>
+                    <TextBox x:Name="tb_price" HorizontalAlignment="Left" Height="23" Margin="18,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" KeyUp="tb_price_KeyUp" IsReadOnly="True" Grid.ColumnSpan="2" Background="#FFE5E5E5"/>
                     <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="18,195,0,0" TextWrapping="Wrap" Text="Цена:" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="18,255,0,0" TextWrapping="Wrap" Text="Учитель" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_teacher" HorizontalAlignment="Left" Height="23" Margin="18,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Grid.ColumnSpan="2" Background="#FFE5E5E5"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Купить курс">
-                <Grid Background="#FFE5E5E5"/>
+                <Grid Background="White">
+                    <ComboBox x:Name="cmb_Courses" HorizontalAlignment="Left" Margin="18,36,0,0" VerticalAlignment="Top" Width="182" ItemsSource="{Binding Path=ProjectTable}" SelectionChanged="cmb_Courses_SelectionChanged">
+
+                    </ComboBox>
+                    <TextBlock x:Name="textBlock1_Copy" HorizontalAlignment="Left" Margin="18,77,0,0" TextWrapping="Wrap" Text="Категория:" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_category_Copy" HorizontalAlignment="Left" Height="23" Margin="18,98,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Background="#FFE5E5E5"/>
+                    <TextBox x:Name="tb_daysOfReturn_Copy" HorizontalAlignment="Left" Height="23" Margin="18,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Background="#FFE5E5E5"/>
+                    <TextBlock x:Name="textBlock2_Copy" HorizontalAlignment="Left" Margin="18,137,0,0" TextWrapping="Wrap" Text="Время на возврат (дни):" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_price_Copy" HorizontalAlignment="Left" Height="23" Margin="18,216,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" KeyUp="tb_price_KeyUp" IsReadOnly="True" Background="#FFE5E5E5"/>
+                    <TextBlock x:Name="textBlock3_Copy" HorizontalAlignment="Left" Margin="18,195,0,0" TextWrapping="Wrap" Text="Цена:" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="textBlock4_Copy" HorizontalAlignment="Left" Margin="18,255,0,0" TextWrapping="Wrap" Text="Учитель" VerticalAlignment="Top"/>
+                    <TextBox x:Name="tb_teacher_Copy" HorizontalAlignment="Left" Height="23" Margin="18,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Background="#FFE5E5E5"/>
+                    <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="18,15,0,0" TextWrapping="Wrap" Text="Имя:" VerticalAlignment="Top" RenderTransformOrigin="-0.082,0.503"/>
+                    <Button x:Name="button" Content="Купить" HorizontalAlignment="Left" Margin="491,341,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

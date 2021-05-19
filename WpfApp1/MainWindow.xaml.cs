@@ -60,9 +60,20 @@ namespace WpfApp1
 
             try
             {
-                dataBase.LocalConnect("admin", "admin");
+                dataBase.LocalConnect("Admin", "123456789");
                 MySqlCommand tableDataParse = new MySqlCommand("SELECT ID_Teacher,FIO,Pasport FROM computercourses.teacher WHERE FIO="+ '"' + Login + '"' + " AND Pasport="+ '"' + Password+ '"'+";", dataBase.getConnection());
                 dataAdapter.SelectCommand = tableDataParse;
+                
+                if(Login=="admin" && Password=="admin")
+                {
+
+                    LogInGrid.Visibility = Visibility.Collapsed;
+                    tabControl.Visibility = Visibility.Visible;
+                    DataBaseView.Visibility = Visibility.Visible;
+
+                    ParseDataBaseData();
+                    return;
+                }
 
                 if (dataAdapter.Fill(loginDT) != 0)
                 {
@@ -70,6 +81,7 @@ namespace WpfApp1
                     this.Hide();
                     tc.Show();
                     this.Close();
+                    return;
                 }
                 else
                 {
@@ -78,11 +90,18 @@ namespace WpfApp1
                     DataTable dt = new DataTable();
                     if (dataAdapter.Fill(dt) != 0)
                     {
+                        this.Hide();
                         new StudentForm((int)dt.Rows[0].ItemArray[0], Login, dataBase).Show();
+                        this.Close();
+                        return;
 
-                    } }
+                    } 
+                }
 
 
+                MessageBox.Show("Неверный логин или пароль!", "Ошибка авторизации!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+
+                return;
             }
             catch (MySqlException error)
             {
@@ -92,11 +111,6 @@ namespace WpfApp1
 
 
 
-            LogInGrid.Visibility = Visibility.Collapsed;
-            tabControl.Visibility = Visibility.Visible;
-            DataBaseView.Visibility = Visibility.Visible;
-
-            ParseDataBaseData();
         }
 
 
@@ -192,6 +206,7 @@ namespace WpfApp1
                 return;
             }
             dataAdapter.Fill(views);
+           
 
             //TriggersList.ItemsSource = new DataView(views);
         }

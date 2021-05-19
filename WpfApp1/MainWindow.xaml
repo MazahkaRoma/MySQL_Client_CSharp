@@ -71,11 +71,10 @@
                 <Grid Background="White" Margin="0,0,-1,-1">
 
                     <DataGrid x:Name="TableData" HorizontalAlignment="Right" Height="273" VerticalAlignment="Top" Width="557" ItemsSource="{Binding}" Background="White" BorderBrush="Black" BorderThickness="0" Grid.ColumnSpan="2" RowEditEnding="TableData_RowEditEnding_1"/>
-                    <Button x:Name="btn_Appy" Content="Apply" HorizontalAlignment="Left" Margin="333,292,0,0" VerticalAlignment="Top" Width="75" Click="btn_Appy_Click"/>
-                    <Button x:Name="button_Copy" Content="Button" HorizontalAlignment="Left" Margin="472,292,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.6,0.55"/>
+                    <Button x:Name="btn_Appy" Content="Подтвердить" HorizontalAlignment="Left" Margin="454,292,0,0" VerticalAlignment="Top" Width="93" Click="btn_Appy_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem x:Name="AddTable" Header="AddTable" >
+            <TabItem x:Name="AddTable" Header="AddTable" d:IsHidden="True" >
                 <Grid Background="White" Margin="0,0,4,3">
                     <TextBox x:Name="newTableName" HorizontalAlignment="Left" Height="23" Margin="69,17,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="177"/>
                     <TextBlock IsHitTestVisible="False" Text="Имя таблицы" HorizontalAlignment="Right" Margin="0,0,378,280" Foreground="DarkGray" IsEnabled="False" RenderTransformOrigin="-7.034,-12.312" Height="19" VerticalAlignment="Bottom" Width="102">
@@ -114,8 +113,8 @@
             </TabItem>
         </TabControl>
         <TreeView x:Name="DataBaseView" HorizontalAlignment="Left" Height="300" Margin="10,7,0,0" VerticalAlignment="Top" Width="190" BorderBrush="{x:Null}">
-            <TreeViewItem Header="DataBase" IsExpanded="True">
-                <TreeViewItem x:Name = "TableList" Header="Tables" IsExpanded="True" ItemTemplate="{StaticResource TablesTemplate}">
+            <TreeViewItem Header="База данных" IsExpanded="True">
+                <TreeViewItem x:Name = "TableList" Header="Таблицы" IsExpanded="True" ItemTemplate="{StaticResource TablesTemplate}">
                     <TreeViewItem.ContextMenu>
                         <ContextMenu >
                             <MenuItem Header="Add table" Click="AddTable_Click"/>
