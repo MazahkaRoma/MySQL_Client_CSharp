@@ -13,7 +13,6 @@ namespace WpfApp1
 
         ~DataBase()
         {
-            closeConnection();
         }
 
         public void LocalConnect(string login,string password)

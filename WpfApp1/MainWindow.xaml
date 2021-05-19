@@ -50,10 +50,10 @@
 
             <TextBox x:Name="txt_LogIn" HorizontalAlignment="Right" Height="18" Margin="0,0,21,88" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="259" KeyUp="txt_LogIn_KeyUp"/>
             <PasswordBox x:Name="txt_password" HorizontalAlignment="Right" Margin="0,0,21,64" VerticalAlignment="Bottom" Width="259" PasswordChanged="pbPassword_PasswordChanged" Height="18" KeyUp="txt_password_KeyUp"/>
-            <Button x:Name="btn_Close" Content="Close" Margin="0,0,21,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="87" Click="btn_Close_Click"/>
-            <Button x:Name="btn_LogIn" Content="LogIn" Margin="0,0,195,10" Height="22" VerticalAlignment="Bottom" Click="btn_LogIn_Click" RenderTransformOrigin="0.706,0.409" HorizontalAlignment="Right" Width="85"/>
-            <TextBlock x:Name="tblPasswordHint" IsHitTestVisible="False" Text="Password" Foreground="DarkGray" Margin="0,0,227,64" IsEnabled="False" Height="19" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
-            <TextBlock IsHitTestVisible="False" Text="Login" HorizontalAlignment="Right" Margin="0,0,247,87" Foreground="DarkGray" IsEnabled="False" RenderTransformOrigin="-7.034,-12.312" Height="19" VerticalAlignment="Bottom" Width="29">
+            <Button x:Name="btn_Close" Content="Закрыть" Margin="0,0,21,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="87" Click="btn_Close_Click"/>
+            <Button x:Name="btn_LogIn" Content="Войти" Margin="0,0,195,10" Height="22" VerticalAlignment="Bottom" Click="btn_LogIn_Click" RenderTransformOrigin="0.706,0.409" HorizontalAlignment="Right" Width="85"/>
+            <TextBlock x:Name="tblPasswordHint" IsHitTestVisible="False" Text="Пароль" Foreground="DarkGray" Margin="0,0,227,64" IsEnabled="False" Height="19" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="50"/>
+            <TextBlock IsHitTestVisible="False" Text="Логин" HorizontalAlignment="Right" Margin="0,0,247,87" Foreground="DarkGray" IsEnabled="False" RenderTransformOrigin="-7.034,-12.312" Height="19" VerticalAlignment="Bottom" Width="29">
                 <TextBlock.Style>
                     <Style TargetType="{x:Type TextBlock}">
                         <Setter Property="Visibility" Value="Collapsed"/>

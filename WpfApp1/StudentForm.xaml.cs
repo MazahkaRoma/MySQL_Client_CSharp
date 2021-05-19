@@ -65,8 +65,18 @@ namespace WpfApp1
             {
                 cmb_Courses.Items.Add(courses.DefaultView[i]["Name"]);
             }
-            
-            
+
+            courses.Clear();
+
+            parse.CommandText = "select Name from computercourses.sell_method";
+            dataAdapter.Fill(courses);
+
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                cmb_payMethod.Items.Add(courses.DefaultView[i]["Name"]);
+            }
+
+
         }
 
         private void TextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -132,7 +142,17 @@ namespace WpfApp1
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            Random r = new Random();
+            try
+            {
+                MySqlCommand insertcmd = new MySqlCommand("insert computercourses.orders(ID_Client,ID_Course,ID_Manager,Date,Price,ID_SellMethod) values(" + ClientID + ",(select ID_Course from computercourses.computer_course where Name=" + '"' + cmb_Courses.Text + '"' + "),(select ID_Manager from computercourses.manager ORDER BY RAND() limit 1),CURDATE()," + '"' + tb_price_Copy.Text + '"' + ",(select ID_Method from computercourses.sell_method where Name=" + '"' + cmb_payMethod.Text + '"' + "));", dataBase.getConnection());
+                insertcmd.ExecuteNonQuery();
+            }
+            catch (MySqlException error)
+            {
+                MessageBox.Show(error.Message, error.Source, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+                return;
+            }
+            parseOrders();
         }
     }
 }

@@ -100,7 +100,6 @@ namespace WpfApp1
 
 
                 MessageBox.Show("Неверный логин или пароль!", "Ошибка авторизации!", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-
                 return;
             }
             catch (MySqlException error)

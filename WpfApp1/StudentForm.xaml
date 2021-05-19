@@ -61,6 +61,7 @@
                     <TextBox x:Name="tb_teacher_Copy" HorizontalAlignment="Left" Height="23" Margin="18,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="182" IsReadOnly="True" Background="#FFE5E5E5"/>
                     <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="18,15,0,0" TextWrapping="Wrap" Text="Имя:" VerticalAlignment="Top" RenderTransformOrigin="-0.082,0.503"/>
                     <Button x:Name="button" Content="Купить" HorizontalAlignment="Left" Margin="491,341,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+                    <ComboBox x:Name="cmb_payMethod" HorizontalAlignment="Left" Margin="18,318,0,0" VerticalAlignment="Top" Width="182"/>
 
                 </Grid>
             </TabItem>
